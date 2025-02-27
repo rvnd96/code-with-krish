@@ -1,4 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Customer } from './entity/customer.entity';
+import { Repository } from 'typeorm';
+import { createCustomerDto } from './dto/customer.dto';
 
 @Injectable()
-export class CustomersService {}
+export class CustomersService {
+  constructor(
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+  ) {}
+
+  async createCustomer(
+    createCustomerDto: createCustomerDto,
+  ): Promise<Customer | null> {
+    const customer = this.customerRepository.create(createCustomerDto);
+    const email = createCustomerDto.email;
+    if (await this.customerRepository.findOneBy({ email })) {
+      throw new ConflictException('User exists in given email');
+    }
+    return await this.customerRepository.save(customer);
+  }
+
+  async findAllCustomers() {
+    return this.customerRepository.find();
+  }
+
+  async findOneCustomer(id: number) {
+    const customer = await this.customerRepository.findOne({
+      where: { id },
+    });
+
+    if (!customer) {
+      throw new NotFoundException(`Customer with id ${id} is not found`);
+    }
+
+    return customer;
+  }
+}

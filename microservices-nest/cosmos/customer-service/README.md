@@ -97,3 +97,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+references: 
+
+1. https://stackoverflow.com/questions/63793417/typeorm-whats-difference-between-unique-decorator-and-unique-true-in-col
+2. https://www.kulik.io/2023/01/30/optional-columns-in-typeorm/
+3. https://stackoverflow.com/questions/57705716/how-to-throw-exception-using-nest-js-if-user-exist-on-mongo-and-else-create-the
+4. https://medium.com/@abdullahirfan99_80517/securing-email-synchronization-in-nestjs-implementing-users-module-in-nestjs-90454bed16ab
