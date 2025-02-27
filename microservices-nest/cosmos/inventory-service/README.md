@@ -97,3 +97,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+references: 
+
+1. https://stackoverflow.com/questions/69448651/how-to-check-the-quantity-in-stock-when-making-concurrent-orders
+2. https://www.geeksforgeeks.org/how-to-use-query-parameters-in-nestjs/
