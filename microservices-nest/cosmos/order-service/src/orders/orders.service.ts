@@ -23,6 +23,7 @@ export class OrdersService {
     private readonly httpService: HttpService,
   ) {}
 
+  // method to check the user exists or not
   private async checkUserExists(
     id: number,
   ): Promise<boolean | AxiosResponse<any>> {
@@ -39,8 +40,8 @@ export class OrdersService {
   async create(createOrderDto: createOrderDto): Promise<Order | null> {
     const { customerId, items } = createOrderDto;
 
+    // check user exists or not in the create order, if not throw the exception
     const userAvailable = await this.checkUserExists(customerId);
-
     if (!userAvailable) {
       throw new NotFoundException(`User with id: ${customerId} is not found`);
     }
