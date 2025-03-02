@@ -54,8 +54,6 @@ export class OrdersService {
 
   // method to reduce the product quantity
   private async reduceStock(id: number, quantity: number): Promise<void> {
-    console.log('id', id)
-    console.log('quantity', quantity)
     try {
       const response = await firstValueFrom(
         this.httpService.patch(`http://localhost:3001/products/${id}/reduce`, {
@@ -63,13 +61,12 @@ export class OrdersService {
         }),
       );
 
-      console.log('response', response)
-
-      if(!response.data) {
-        throw new BadRequestException(`Failed to reduce stock for product ID: ${id}`);
+      if (!response.data) {
+        throw new BadRequestException(
+          `Failed to reduce stock for product ID: ${id}`,
+        );
       }
     } catch (error) {
-      console.error('Error reducing stock:', error?.response?.data || error.message);
       throw new BadRequestException(`Unable to reduce stock`);
     }
   }
