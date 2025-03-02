@@ -102,3 +102,5 @@ references
 1. https://docs.nestjs.com/techniques/http-module#http-module
 2. https://stackoverflow.com/questions/51910908/nestjs-async-httpservice-call
 3. https://www.youtube.com/watch?v=hHBDcbI6EVA
+4. https://rxjs.dev/api/index/function/firstValueFrom
+5. https://docs.nestjs.com/exception-filters

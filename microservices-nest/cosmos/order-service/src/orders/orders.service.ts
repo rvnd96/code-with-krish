@@ -37,6 +37,44 @@ export class OrdersService {
     }
   }
 
+  // method to validate stock
+  private async validateStock(id: number, quantity: number): Promise<boolean> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get<{ available: boolean }>(
+          `http://localhost:3001/products/${id}/validate?quantity=${quantity}`,
+        ),
+      );
+
+      return response.data.available;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // method to reduce the product quantity
+  private async reduceStock(id: number, quantity: number): Promise<void> {
+    console.log('id', id)
+    console.log('quantity', quantity)
+    try {
+      const response = await firstValueFrom(
+        this.httpService.patch(`http://localhost:3001/products/${id}/reduce`, {
+          quantity,
+        }),
+      );
+
+      console.log('response', response)
+
+      if(!response.data) {
+        throw new BadRequestException(`Failed to reduce stock for product ID: ${id}`);
+      }
+    } catch (error) {
+      console.error('Error reducing stock:', error?.response?.data || error.message);
+      throw new BadRequestException(`Unable to reduce stock`);
+    }
+  }
+
+  // create the order
   async create(createOrderDto: createOrderDto): Promise<Order | null> {
     const { customerId, items } = createOrderDto;
 
@@ -46,6 +84,23 @@ export class OrdersService {
       throw new NotFoundException(`User with id: ${customerId} is not found`);
     }
 
+    // check the stock availability
+    const stockCheckPromises = items.map(async (item) => {
+      const isStockAvailable = await this.validateStock(
+        item.productId,
+        item.quantity,
+      );
+
+      if (isStockAvailable === false) {
+        throw new BadRequestException(
+          `The stock of the item ${item.productId} is less than the requested quantity`,
+        );
+      }
+    });
+
+    await Promise.all(stockCheckPromises);
+
+    // creating order
     const order = this.orderRepository.create({
       customerId,
       status: 'PENDING',
@@ -63,6 +118,13 @@ export class OrdersService {
     );
 
     await this.orderItemRepository.save(orderItems);
+
+    // reduce quantity
+    const reduceQuantity = items.map((item) =>
+      this.reduceStock(item.productId, item.quantity),
+    );
+    await Promise.all(reduceQuantity);
+
     return await this.orderRepository.findOne({
       where: { id: savedOrder.id },
       relations: ['items'],

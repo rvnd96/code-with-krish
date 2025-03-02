@@ -1,7 +1,18 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entity/product.entity';
+import { ReduceQuantity } from './dto/reduce-quantity.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -30,5 +41,16 @@ export class ProductsController {
     @Query('quantity') quantity: number,
   ): Promise<{ available: boolean }> {
     return this.productsService.validateStock(id, quantity);
+  }
+
+  @Patch(':id/reduce')
+  async reduceStock(
+    @Param('id') id: number,
+    @Body() reduceQuantity: ReduceQuantity,
+  ): Promise<Product> {
+    if (reduceQuantity.quantity <= 0) {
+      throw new BadRequestException('Quantity must be greater than zero');
+    }
+    return this.productsService.reduceProductStock(id, reduceQuantity.quantity);
   }
 }
