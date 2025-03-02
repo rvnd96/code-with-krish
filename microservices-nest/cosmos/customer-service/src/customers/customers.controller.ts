@@ -5,17 +5,17 @@ import { Customer } from './entity/customer.entity';
 
 @Controller('customers')
 export class CustomersController {
-  constructor(private customerService: CustomersService) {}
+  constructor(private readonly customerService: CustomersService) {}
 
   @Post()
   async createCustomer(
     @Body() createCustomerDto: createCustomerDto,
-  ): Promise<Customer | null> {
+  ): Promise<Customer> {
     return await this.customerService.createCustomer(createCustomerDto);
   }
 
   @Get()
-  async findAllCustomers() {
+  async findAllCustomers(): Promise<Customer[]> {
     return this.customerService.findAllCustomers();
   }
 

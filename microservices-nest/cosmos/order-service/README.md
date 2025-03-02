@@ -97,3 +97,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+references
+1. https://docs.nestjs.com/techniques/http-module#http-module
+2. https://stackoverflow.com/questions/51910908/nestjs-async-httpservice-call
+3. https://www.youtube.com/watch?v=hHBDcbI6EVA

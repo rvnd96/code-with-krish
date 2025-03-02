@@ -104,3 +104,5 @@ references:
 2. https://www.kulik.io/2023/01/30/optional-columns-in-typeorm/
 3. https://stackoverflow.com/questions/57705716/how-to-throw-exception-using-nest-js-if-user-exist-on-mongo-and-else-create-the
 4. https://medium.com/@abdullahirfan99_80517/securing-email-synchronization-in-nestjs-implementing-users-module-in-nestjs-90454bed16ab
+5. https://stackoverflow.com/questions/77131375/how-to-allow-null-or-empty-string-in-class-validator-for-specific-fields
+6. https://medium.com/@ahureinebenezer/mastering-data-validation-in-nestjs-a-complete-guide-with-class-validator-and-class-transformer-02a029db6ecf

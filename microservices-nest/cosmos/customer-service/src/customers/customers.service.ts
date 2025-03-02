@@ -17,20 +17,20 @@ export class CustomersService {
 
   async createCustomer(
     createCustomerDto: createCustomerDto,
-  ): Promise<Customer | null> {
+  ): Promise<Customer> {
     const customer = this.customerRepository.create(createCustomerDto);
     const email = createCustomerDto.email;
     if (await this.customerRepository.findOneBy({ email })) {
-      throw new ConflictException('User exists in given email');
+      throw new ConflictException(`User exists in given email ${email}`);
     }
     return await this.customerRepository.save(customer);
   }
 
-  async findAllCustomers() {
+  async findAllCustomers(): Promise<Customer[]> {
     return this.customerRepository.find();
   }
 
-  async findOneCustomer(id: number) {
+  async findOneCustomer(id: number): Promise<Customer> {
     const customer = await this.customerRepository.findOne({
       where: { id },
     });
