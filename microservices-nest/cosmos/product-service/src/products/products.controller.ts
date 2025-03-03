@@ -1,18 +1,15 @@
 import {
-  BadRequestException,
-  Body,
   Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
   Post,
+  Get,
+  Param,
   Query,
+  Body,
+  Patch,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entity/product.entity';
-import { ReduceQuantity } from './dto/reduce-quantity.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -25,14 +22,14 @@ export class ProductsController {
     return this.productsService.createProduct(createProductDto);
   }
 
+  @Get(':id')
+  async getProductById(@Param('id') id: number): Promise<Product> {
+    return this.productsService.getProductById(id);
+  }
+
   @Get()
   async getAllProducts(): Promise<Product[]> {
     return this.productsService.getAllProducts();
-  }
-
-  @Get(':id')
-  async getProductById(@Param('id') id: number): Promise<Product | null> {
-    return this.productsService.getProductById(id);
   }
 
   @Get(':id/validate')
@@ -42,15 +39,11 @@ export class ProductsController {
   ): Promise<{ available: boolean }> {
     return this.productsService.validateStock(id, quantity);
   }
-
-  @Patch(':id/reduce')
+  @Patch(':id/quantity')
   async reduceStock(
     @Param('id') id: number,
-    @Body() reduceQuantity: ReduceQuantity,
+    @Body('quantity') quantity: number,
   ): Promise<Product> {
-    if (reduceQuantity.quantity <= 0) {
-      throw new BadRequestException('Quantity must be greater than zero');
-    }
-    return this.productsService.reduceProductStock(id, reduceQuantity.quantity);
+    return this.productsService.reduceStock(id, quantity);
   }
 }

@@ -1,15 +1,13 @@
-import { IsEnum } from "class-validator";
+import { IsEnum } from 'class-validator';
 
 export enum OrderStatus {
-    PENDING='PENDING',
-    CONFIRMED='CONFIRMED',
-    SHIPPED='SHIPPED',
-    DELIVERED='DELIVERED',
-    CANCELLED='CANCELLED',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
 }
-
 export class UpdateOrderStatus {
-    @IsEnum(OrderStatus)
-    status: OrderStatus;
-    
+  @IsEnum(OrderStatus)
+  status: OrderStatus;
 }
