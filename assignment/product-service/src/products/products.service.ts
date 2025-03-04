@@ -94,8 +94,8 @@ export class ProductsService {
         await this.producer.send({
           topic: `rmadushan.order.inventory.update`,
           messages: [
-            { 
-              value: JSON.stringify({ customerId, customerName, items }) 
+            {
+              value: JSON.stringify({ customerId, customerName, items }),
             },
           ],
         });
