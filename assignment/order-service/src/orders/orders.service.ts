@@ -159,7 +159,7 @@ export class OrdersService implements OnModuleInit {
 
     await this.consumer.run({
       eachMessage: async ({ message }) => {
-        console.log('getting a msg (order).....');
+        console.log('getting a msg (to order from inventory saying the invery updated).....');
         if (!message.value) {
           throw new BadRequestException('Message value is null');
         }
@@ -170,7 +170,7 @@ export class OrdersService implements OnModuleInit {
           status: 'PENDING',
         });
         const savedOrder = await this.orderRepository.save(order);
-
+    
         const orderItems = items.map((item) =>
           this.orderItemRepository.create({
             productId: item.productId,
@@ -181,15 +181,15 @@ export class OrdersService implements OnModuleInit {
         );
         await this.orderItemRepository.save(orderItems);
 
-        // producing notification
-        await this.producer.send({
-          topic: `rmadushan.order.created.notification`,
-          messages: [
-            {
-              value: JSON.stringify({ message: `Order created successfully!` }),
-            },
-          ],
-        });
+        // // producing notification
+        // await this.producer.send({
+        //   topic: `rmadushan.order.created.notification`,
+        //   messages: [
+        //     {
+        //       value: JSON.stringify({ message: `Order created successfully!` }),
+        //     },
+        //   ],
+        // });
       },
     });
   }

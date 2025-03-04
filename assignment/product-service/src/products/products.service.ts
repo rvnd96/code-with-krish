@@ -8,10 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entity/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Kafka } from './../../../order-service/node_modules/kafkajs/types/index.d';
+import { Kafka } from 'kafkajs';
 
 @Injectable()
-export class ProductsService implements OnModuleInit {
+export class ProductsService {
   private readonly kafka = new Kafka({ brokers: ['3.0.159.213:9092'] });
   private readonly consumer = this.kafka.consumer({
     groupId: `rmadushan-inventory-service`,
@@ -85,7 +85,9 @@ export class ProductsService implements OnModuleInit {
         await this.producer.send({
           topic: `rmadushan.order.inventory.update`,
           messages: [
-            { value: JSON.stringify({ customerId, customerName, items }) },
+            { 
+              value: JSON.stringify({ customerId, customerName, items }) 
+            },
           ],
         });
       },
