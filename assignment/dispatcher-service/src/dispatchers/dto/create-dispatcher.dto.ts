@@ -2,7 +2,7 @@ import { IsString, IsInt } from 'class-validator';
 
 
 export class CreateaDipatcherDto {
-    @IsInt()
+    @IsString()
     dispatcherId: string;
     @IsString()
     city: string;
