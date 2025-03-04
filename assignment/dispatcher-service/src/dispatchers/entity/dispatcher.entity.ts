@@ -5,7 +5,7 @@ export class Dispatcher {
     @PrimaryGeneratedColumn()
     id: number;
     @Column()
-    dispatcherId: number;
+    dispatcherId: string;
     @Column()
     city: string;
 }

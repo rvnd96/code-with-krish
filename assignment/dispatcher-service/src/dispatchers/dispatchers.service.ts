@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Dispatcher } from './entity/dispatcher.entity';
 import { Repository } from 'typeorm';
@@ -19,6 +19,10 @@ export class DispatchersService {
   }
 
   async getVehiclesByLocation(city: string) {
-    // const 
+    const vehicle = await this.dispatcherRepo.find({ where: { city } });
+    if (!vehicle) {
+      throw new NotFoundException(`No vehicles in ${city}`);
+    }
+    return vehicle;
   }
 }
