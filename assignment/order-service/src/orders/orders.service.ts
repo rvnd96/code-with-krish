@@ -13,9 +13,11 @@ import { OrderStatus, UpdateOrderStatus } from './dto/update-order.dto';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { Kafka } from 'kafkajs';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class OrdersService implements OnModuleInit {
+  private readonly redis = new Redis({ host: '3.0.159.213', port: 6379 });
   private readonly kafka = new Kafka({ brokers: ['3.0.159.213:9092'] });
   private readonly producer = this.kafka.producer();
   private readonly consumer = this.kafka.consumer({
@@ -55,6 +57,24 @@ export class OrdersService implements OnModuleInit {
       throw new BadRequestException(
         `Customer ID ${customerId} does not exist.`,
       );
+    }
+
+    // aquare lock
+    for (const item of items) {
+      const lockKeys = `rmadushan.product:${item.productId}:lock`;
+      const lock = await this.redis.set(
+        lockKeys,
+        `locked`,
+        'EX',
+        3600 * 24,
+        'NX',
+      );
+      if (!lock) {
+        throw new BadRequestException(
+          `product id ${item.productId} is being processed, please try again.`,
+        );
+      }
+      console.log('lock created', lock);
     }
 
     // produce order as an event
@@ -159,11 +179,15 @@ export class OrdersService implements OnModuleInit {
 
     await this.consumer.run({
       eachMessage: async ({ message }) => {
-        console.log('getting a msg (to order from inventory saying the invery updated).....');
+        console.log(
+          'getting a msg (to order from inventory saying the invery updated).....',
+        );
         if (!message.value) {
           throw new BadRequestException('Message value is null');
         }
-        const { customerId, city, items } = JSON.parse(message.value.toString());
+        const { customerId, city, items } = JSON.parse(
+          message.value.toString(),
+        );
 
         const order = this.orderRepository.create({
           customerId,
@@ -171,7 +195,7 @@ export class OrdersService implements OnModuleInit {
           status: 'PENDING',
         });
         const savedOrder = await this.orderRepository.save(order);
-    
+
         const orderItems = items.map((item) =>
           this.orderItemRepository.create({
             productId: item.productId,
@@ -197,10 +221,10 @@ export class OrdersService implements OnModuleInit {
           topic: `rmadushan.order.confirmed`,
           messages: [
             {
-              value: JSON.stringify(order)
-            }
-          ]
-        })
+              value: JSON.stringify(order),
+            },
+          ],
+        });
       },
     });
   }

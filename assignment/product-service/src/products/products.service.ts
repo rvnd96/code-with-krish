@@ -9,9 +9,11 @@ import { Repository } from 'typeorm';
 import { Product } from './entity/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Kafka } from 'kafkajs';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class ProductsService {
+  private readonly redis = new Redis({ host: '3.0.159.213', port: 6379 });
   private readonly kafka = new Kafka({ brokers: ['3.0.159.213:9092'] });
   private readonly consumer = this.kafka.consumer({
     groupId: `rmadushan-inventory-service`,
@@ -80,6 +82,13 @@ export class ProductsService {
 
         for (const item of items) {
           await this.reduceStock(item.productId, item.quantity);
+        }
+
+        // release the lock
+        for (const item of items) {
+          const lockKey = `rmadushan.product:${item.productId}:lock`;
+          await this.redis.del(lockKey);
+          console.log('lock released', lockKey);
         }
 
         await this.producer.send({
