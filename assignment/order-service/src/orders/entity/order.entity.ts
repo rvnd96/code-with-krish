@@ -13,6 +13,8 @@ export class Order {
   id: number;
   @Column()
   customerId: number;
+  @Column()
+  city: string;
   @CreateDateColumn()
   createdAt: Date;
   @Column({ default: 'PENDING' })

@@ -41,7 +41,7 @@ export class OrdersService implements OnModuleInit {
 
   // create the order
   async create(createOrderDto: createOrderDto): Promise<any> {
-    const { customerId, items } = createOrderDto;
+    const { customerId, city, items } = createOrderDto;
 
     // Validate customer exists
     let customerName = '';
@@ -62,7 +62,7 @@ export class OrdersService implements OnModuleInit {
       topic: `rmadushan.order.create`,
       messages: [
         {
-          value: JSON.stringify({ customerId, customerName, items }),
+          value: JSON.stringify({ customerId, city, customerName, items }),
         },
       ],
     });
@@ -163,10 +163,11 @@ export class OrdersService implements OnModuleInit {
         if (!message.value) {
           throw new BadRequestException('Message value is null');
         }
-        const { customerId, items } = JSON.parse(message.value.toString());
+        const { customerId, city, items } = JSON.parse(message.value.toString());
 
         const order = this.orderRepository.create({
           customerId,
+          city,
           status: 'PENDING',
         });
         const savedOrder = await this.orderRepository.save(order);
@@ -190,6 +191,16 @@ export class OrdersService implements OnModuleInit {
         //     },
         //   ],
         // });
+
+        // order confirmed
+        await this.producer.send({
+          topic: `rmadushan.order.confirmed`,
+          messages: [
+            {
+              value: JSON.stringify(order)
+            }
+          ]
+        })
       },
     });
   }

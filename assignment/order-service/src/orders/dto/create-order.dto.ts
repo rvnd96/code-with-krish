@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsString, ValidateNested } from 'class-validator';
 
 class OrderItemDto {
   @IsInt()
@@ -13,6 +13,8 @@ class OrderItemDto {
 export class createOrderDto {
   @IsInt()
   customerId: number;
+  @IsString()
+  city: string;
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
